@@ -94,7 +94,7 @@ BOOKING_COUNTER = 1
 QUESTIONS: dict[dict] = {}
 QUESTION_COUNTER = 0
 
-async def answer_button(question_id):
+def answer_button(question_id):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
