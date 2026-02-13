@@ -94,11 +94,11 @@ BOOKING_COUNTER = 1
 QUESTIONS: dict[dict] = {}
 QUESTION_COUNTER = 0
 
-def answer_button(question_id):
+def answer_button(user_id):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=f"✍️ Javob yozish", url=f"https://t.me/avtowallet_bot?start=answer__{question_id}")
+                InlineKeyboardButton(text=f"✍️ Javob yozish", url=f"https://t.me/avtowallet_bot?start=answer__{user_id}")
             ]
         ]
     )
@@ -526,7 +526,7 @@ async def receive_contact(message: types.Message, state: FSMContext, bot: Bot):
         f"👤 @{message.from_user.username}\n"
         f"📝 {message.text}",
         parse_mode="HTML",
-        reply_markup=answer_button(QUESTION_COUNTER)
+        reply_markup=answer_button(user_id=message.from_user.id)
     )
     
     QUESTIONS[QUESTION_COUNTER]["msg"] = msg

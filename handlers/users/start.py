@@ -50,15 +50,12 @@ async def start_handler(message: types.Message, state: FSMContext):
         if spltd[1] and spltd[1].startswith("answer__"):
             question_id = spltd[1].split("__")[-1]
             
-            if menu.QUESTIONS[question_id]:
-                await state.set_state(AnswerState.waiting_message)
-                await state.update_data(question_id=question_id)
+            await state.set_state(AnswerState.waiting_message)
+            await state.update_data(question_id=question_id)
 
-                await message.answer(
-                    text=html.bold("Javob yozing ✍️")
-                )
-            else:
-                await message.answer(text=html.bold("Savol topilmadi 🚫"))
+            await message.answer(
+                text=html.bold("Javob yozing ✍️")
+            )
 
 
 @router.message(F.content_type == types.ContentType.TEXT, StateFilter(AnswerState.waiting_message))
@@ -66,16 +63,11 @@ async def answer_message_handler(message: types.Message, state: FSMContext):
     answer = message.text
     
     data = await state.get_data()
-    question = menu.QUESTIONS[data.get("question_id")]
+    question_id = menu.QUESTIONS[data.get("question_id")]
     
     try:
-        await bot.edit_message_text(text=question.get("msg").text)
-        await bot.send_message(chat_id=question.get("user_id"), text=f"""<b>Sizga admin tomonidan javob yuborildi ✅</b>
+        await bot.send_message(chat_id=question_id, text=f"""<b>Sizga admin tomonidan javob yuborildi ✅</b>
 
-    <i>✍️ {answer}</i>""")
-        
-        await bot.send_message(chat_id=menu.GROUP_ID, reply_to_message_id=question.get("msg_id"), text=f"""<b>Javob yuborildi ✅</b>
-        
     <i>✍️ {answer}</i>""")
     except:
         pass
