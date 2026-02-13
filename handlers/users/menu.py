@@ -525,7 +525,8 @@ async def receive_contact(message: types.Message, state: FSMContext, bot: Bot):
         f"💬 <b>Yangi murojaat:</b>\n\n"
         f"👤 @{message.from_user.username}\n"
         f"📝 {message.text}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=answer_button(QUESTION_COUNTER)
     )
     
     QUESTIONS[QUESTION_COUNTER]["msg"] = msg
