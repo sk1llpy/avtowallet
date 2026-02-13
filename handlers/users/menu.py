@@ -10,8 +10,28 @@ from zoneinfo import ZoneInfo
 from routers import users as router
 
 GROUP_ID = -1003898804487
+TASHKENT_TZ = ZoneInfo("Asia/Tashkent")
 
-tz_tashkent = ZoneInfo("Asia/Tashkent")
+
+def tz_now() -> datetime.datetime:
+    """Always return timezone-aware current time"""
+    return datetime.datetime.now(TASHKENT_TZ)
+
+
+def make_tz(dt: datetime.datetime) -> datetime.datetime:
+    """Attach Tashkent timezone if datetime is naive"""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=TASHKENT_TZ)
+    return dt.astimezone(TASHKENT_TZ)
+
+
+def parse_booking_datetime(date_str: str, time_str: str) -> datetime.datetime:
+    """Create timezone-aware booking datetime"""
+    naive = datetime.datetime.strptime(
+        f"{date_str} {time_str}",
+        "%Y-%m-%d %H:%M"
+    )
+    return naive.replace(tzinfo=TASHKENT_TZ)
 
 
 # =========================
@@ -78,7 +98,7 @@ class ContactState(StatesGroup):
 # =========================
 
 def generate_dates_keyboard():
-    today = datetime.date.today()
+    today = datetime.datetime.now(TASHKENT_TZ).date()
     keyboard = []
 
     for i in range(15):
@@ -100,12 +120,10 @@ def generate_time_keyboard(selected_date: str):
     times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00"]
     booked = BOOKED_SLOTS.get(selected_date, {})
     keyboard = []
-    now = datetime.datetime.now(tz_tashkent)
+    now = tz_now()
 
     for time in times:
-        booking_datetime = datetime.datetime.strptime(
-            f"{selected_date} {time}", "%Y-%m-%d %H:%M"
-        )
+        booking_datetime = parse_booking_datetime(selected_date, time)
 
         if time not in booked and booking_datetime > now:
             keyboard.append([
@@ -295,7 +313,7 @@ async def admin_came(callback: types.CallbackQuery):
     booking_id = int(booking_id)
 
     booking = BOOKINGS[booking_id]
-    now = datetime.datetime.now(tz_tashkent)
+    now = tz_now()
 
     # 10 minut oldin bosish mumkin
     if now < booking["datetime"] - datetime.timedelta(minutes=10):
@@ -351,7 +369,7 @@ async def admin_notcame(callback: types.CallbackQuery):
     booking_id = int(booking_id)
 
     booking = BOOKINGS[booking_id]
-    now = datetime.datetime.now(tz_tashkent)
+    now = tz_now()
 
     # 10 minut o‘tmaguncha bosib bo‘lmaydi
     if now < booking["datetime"] + datetime.timedelta(minutes=10):
