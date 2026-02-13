@@ -74,11 +74,20 @@ async def button():
 # =========================
 
 SERVICES = [
-    {"title": "Dvigatel diagnostikasi", "price": 150000},
-    {"title": "Moy almashtirish", "price": 80000},
-    {"title": "Tormoz kolodkasi almashtirish", "price": 120000},
-    {"title": "Akkumulyator almashtirish", "price": 200000},
-    {"title": "Kompyuter diagnostika", "price": 100000},
+    {"title": "Kompyuter diagnostikasi", "price": 100000},
+    {"title": "Injektor tozalash", "price": 550000},
+    {"title": "Drosilniy zaslonka tozalash", "price": 200000},
+    {"title": "Svecha/provodka almashtirish", "price": 100000},
+    {"title": "Motor proshivka", "price": 300000},
+    {"title": "Korobka proshivka", "price": 300000},
+    {"title": "Korobka adaptatsiya", "price": 200000},
+    {"title": "Konditsioner zapravka (standart freon)", "price": 450000},
+    {"title": "Konditsioner zapravka (Tesla freon)", "price": 1200000},
+    {"title": "Remont karburator", "price": 300000},
+    {"title": "Damasga injektor ustanovka qilish", "price": 7200000},
+    {"title": "Damasga elektron ventilyator ustanovka qilish", "price": 800000},
+    {"title": "Damasni regulirovka qilish", "price": 50000},
+    {"title": "Klapan regulirovka qilish", "price": 100000},
 ]
 
 
@@ -340,7 +349,7 @@ async def admin_came(callback: types.CallbackQuery):
     now = tz_now()
 
     # 10 minut oldin bosish mumkin
-    if now < ensure_tz(booking["datetime"]) - datetime.timedelta(minutes=10):
+    if now < ensure_tz(booking["datetime"]) - datetime.timedelta(hours=10):
         await callback.answer("🚫 Hali 10 daqiqa qolganidan oldin bosib bo‘lmaydi!", show_alert=True)
         return
 
