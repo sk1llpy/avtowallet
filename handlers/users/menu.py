@@ -150,7 +150,7 @@ def generate_dates_keyboard():
 
 
 def generate_time_keyboard(selected_date: str):
-    times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00"]
+    times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"]
     booked = BOOKED_SLOTS.get(selected_date, {})
     keyboard = []
     now = tz_now()
