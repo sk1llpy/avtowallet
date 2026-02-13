@@ -6,9 +6,12 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from zoneinfo import ZoneInfo
 from routers import users as router
 
 GROUP_ID = -1003898804487
+
+tz_tashkent = ZoneInfo("Asia/Tashkent")
 
 
 # =========================
@@ -97,7 +100,7 @@ def generate_time_keyboard(selected_date: str):
     times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00"]
     booked = BOOKED_SLOTS.get(selected_date, {})
     keyboard = []
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz_tashkent)
 
     for time in times:
         booking_datetime = datetime.datetime.strptime(
@@ -292,7 +295,7 @@ async def admin_came(callback: types.CallbackQuery):
     booking_id = int(booking_id)
 
     booking = BOOKINGS[booking_id]
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz_tashkent)
 
     # 10 minut oldin bosish mumkin
     if now < booking["datetime"] - datetime.timedelta(minutes=10):
@@ -348,7 +351,7 @@ async def admin_notcame(callback: types.CallbackQuery):
     booking_id = int(booking_id)
 
     booking = BOOKINGS[booking_id]
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz_tashkent)
 
     # 10 minut o‘tmaguncha bosib bo‘lmaydi
     if now < booking["datetime"] + datetime.timedelta(minutes=10):
