@@ -33,6 +33,19 @@ def parse_booking_datetime(date_str: str, time_str: str) -> datetime.datetime:
     )
     return naive.replace(tzinfo=TASHKENT_TZ)
 
+def ensure_tz(dt: datetime.datetime) -> datetime.datetime:
+    """
+    Guarantee datetime is Asia/Tashkent aware.
+    Works for:
+    - naive datetime
+    - UTC datetime
+    - already aware datetime
+    """
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=TASHKENT_TZ)
+
+    return dt.astimezone(TASHKENT_TZ)
+
 
 # =========================
 # ASOSIY MENU
@@ -316,7 +329,7 @@ async def admin_came(callback: types.CallbackQuery):
     now = tz_now()
 
     # 10 minut oldin bosish mumkin
-    if now < booking["datetime"] - datetime.timedelta(minutes=10):
+    if now < ensure_tz(booking["datetime"]) - datetime.timedelta(minutes=10):
         await callback.answer("🚫 Hali 10 daqiqa qolganidan oldin bosib bo‘lmaydi!", show_alert=True)
         return
 
@@ -372,7 +385,7 @@ async def admin_notcame(callback: types.CallbackQuery):
     now = tz_now()
 
     # 10 minut o‘tmaguncha bosib bo‘lmaydi
-    if now < booking["datetime"] + datetime.timedelta(minutes=10):
+    if now < ensure_tz(booking["datetime"]) + datetime.timedelta(minutes=10):
         await callback.answer("⏳ 10 daqiqa o‘tishini kuting!", show_alert=True)
         return
 
