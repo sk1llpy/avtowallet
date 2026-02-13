@@ -150,7 +150,7 @@ def generate_dates_keyboard():
 
 
 def generate_time_keyboard(selected_date: str):
-    times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"]
+    times = ["10:00","11:00","12:00","14:00","15:00","16:00","17:00","18:00"]
     booked = BOOKED_SLOTS.get(selected_date, {})
     keyboard = []
     now = tz_now()
@@ -496,8 +496,8 @@ async def location_handler(message: types.Message):
 async def contact_handler(message: types.Message):
     await message.answer(
         "📞 <b>Bog‘lanish uchun:</b>\n\n"
-        "📱 Telefon: +998 97 773 88 85\n"
-        "🕘 Ish vaqti: 09:00 - 20:00\n\n"
+        "📱 Telefon: +998 97-773-88-85\n"
+        "🕘 Ish vaqti: 10:00 - 19:00\n\n"
         "🚗 Sizni kutib qolamiz!",
         parse_mode="HTML"
     )
