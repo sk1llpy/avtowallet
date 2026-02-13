@@ -511,6 +511,8 @@ async def start_contact(message: types.Message, state: FSMContext):
 
 @router.message(ContactState.waiting_message)
 async def receive_contact(message: types.Message, state: FSMContext, bot: Bot):
+    global QUESTION_COUNTER
+    
     QUESTION_COUNTER += 1
     
     QUESTIONS[QUESTION_COUNTER] = {
