@@ -3,37 +3,86 @@ import datetime
 from aiogram import types, html, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from zoneinfo import ZoneInfo
 
 from routers import users as router
 from keyboards.default import menu, contact
 from states.register import RegisterState
+from misc import bot
+from .menu import QUESTIONS, QUESTION_COUNTER, GROUP_ID
 
 USERS = {}
+TASHKENT_TZ = ZoneInfo("Asia/Tashkent")
+
+
+class AnswerState(StatesGroup):
+    waiting_message = State()
 
 
 @router.message(Command("start"))
 async def start_handler(message: types.Message, state: FSMContext):
-    user_id = message.from_user.id
+    spltd = message.text.split()
+    
+    if len(spltd) == 1:
+        user_id = message.from_user.id
 
-    if USERS.get(user_id):
-        await message.answer(
-            text=html.bold(
-                "👋 Assalomu alaykum!\n\n"
-                "Siz allaqachon ro'yxatdan o'tgansiz ✅\n"
-                "Botimizdan bemalol foydalanishingiz mumkin 🚀"
-            ),
-            reply_markup=await menu.button()
-        )
+        if USERS.get(user_id):
+            await message.answer(
+                text=html.bold(
+                    "👋 Assalomu alaykum!\n\n"
+                    "Siz allaqachon ro'yxatdan o'tgansiz ✅\n"
+                    "Botimizdan bemalol foydalanishingiz mumkin 🚀"
+                ),
+                reply_markup=await menu.button()
+            )
+        else:
+            await state.set_state(RegisterState.phone_number)
+            await message.answer(
+                text=html.bold(
+                    "👋 Assalomu alaykum!\n\n"
+                    "Botimizga xush kelibsiz 🤖\n"
+                    "Davom etish uchun telefon raqamingizni yuboring 📱"
+                ),
+                reply_markup=await contact.button()
+            )
     else:
-        await state.set_state(RegisterState.phone_number)
-        await message.answer(
-            text=html.bold(
-                "👋 Assalomu alaykum!\n\n"
-                "Botimizga xush kelibsiz 🤖\n"
-                "Davom etish uchun telefon raqamingizni yuboring 📱"
-            ),
-            reply_markup=await contact.button()
-        )
+        if spltd[1] and spltd[1].startswith("answer:"):
+            question_id = spltd[1].split()[-1]
+            
+            if QUESTIONS[question_id]:
+                await state.set_state(AnswerState.waiting_message)
+                await state.update_data(question_id=question_id)
+
+                await message.answer(
+                    text=html.bold("Javob yozing ✍️")
+                )
+            else:
+                await message.answer(text=html.bold("Savol topilmadi 🚫"))
+
+
+@router.message(F.content_type == types.ContentType.TEXT, StateFilter(AnswerState.waiting_message))
+async def answer_message_handler(message: types.Message, state: FSMContext):
+    answer = message.text
+    
+    data = await state.get_data()
+    question = QUESTIONS[data.get("question_id")]
+    
+    try:
+        await bot.edit_message_text(text=question.get("msg").text)
+        await bot.send_message(chat_id=question.get("user_id"), text=f"""<b>Sizga admin tomonidan javob yuborildi ✅</b>
+
+    <i>✍️ {answer}</i>""")
+        
+        await bot.send_message(chat_id=GROUP_ID, reply_to_message_id=question.get("msg_id"), text=f"""<b>Javob yuborildi ✅</b>
+        
+    <i>✍️ {answer}</i>""")
+    except:
+        pass
+    
+    await state.clear()
+    await message.answer(text=html.bold(f"Javob muvvafaqiyatli yuborildi ✅"))
+    
 
 
 @router.message(
@@ -53,7 +102,7 @@ async def get_contact(message: types.Message, state: FSMContext):
 
     USERS[user_id] = {
         "phone_number": phone,
-        "created_at": datetime.datetime.now()
+        "created_at": datetime.datetime.now(TASHKENT_TZ)
     }
 
     await state.clear()

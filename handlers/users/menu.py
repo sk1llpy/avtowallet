@@ -91,6 +91,17 @@ BOOKED_SLOTS = {}
 USER_BOOKINGS = {}
 COMPLETED_BOOKINGS = []
 BOOKING_COUNTER = 1
+QUESTIONS: dict[dict] = {}
+QUESTION_COUNTER = 0
+
+async def answer_button(question_id):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=f"✍️ Javob yozish", url=f"https://t.me/avtowallet_bot?start=answer:{question_id}")
+            ]
+        ]
+    )
 
 
 # =========================
@@ -500,13 +511,23 @@ async def start_contact(message: types.Message, state: FSMContext):
 
 @router.message(ContactState.waiting_message)
 async def receive_contact(message: types.Message, state: FSMContext, bot: Bot):
-    await bot.send_message(
+    QUESTION_COUNTER += 1
+    
+    QUESTIONS[QUESTION_COUNTER] = {
+        "text": message.text,
+        "user_id": message.from_user.id
+    }
+    
+    msg = await bot.send_message(
         GROUP_ID,
         f"💬 <b>Yangi murojaat:</b>\n\n"
         f"👤 @{message.from_user.username}\n"
         f"📝 {message.text}",
         parse_mode="HTML"
     )
+    
+    QUESTIONS[QUESTION_COUNTER]["msg"] = msg
+    QUESTIONS[QUESTION_COUNTER]["msg_id"] = msg.message_id
 
     await message.answer("✅ Murojaatingiz yuborildi. Tez orada javob beramiz.")
     await state.clear()
