@@ -68,7 +68,7 @@ async def answer_message_handler(message: types.Message, state: FSMContext):
     try:
         await bot.send_message(chat_id=question_id, text=f"""<b>Sizga admin tomonidan javob yuborildi ✅</b>
 
-    <i>✍️ {answer}</i>""")
+<i>✍️ {answer}</i>""")
     except:
         pass
     
