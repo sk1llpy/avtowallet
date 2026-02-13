@@ -47,8 +47,8 @@ async def start_handler(message: types.Message, state: FSMContext):
                 reply_markup=await contact.button()
             )
     else:
-        if spltd[1] and spltd[1].startswith("answer:"):
-            question_id = spltd[1].split()[-1]
+        if spltd[1] and spltd[1].startswith("answer__"):
+            question_id = spltd[1].split("__")[-1]
             
             if QUESTIONS[question_id]:
                 await state.set_state(AnswerState.waiting_message)

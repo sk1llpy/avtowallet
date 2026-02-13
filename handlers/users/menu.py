@@ -98,7 +98,7 @@ def answer_button(question_id):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=f"✍️ Javob yozish", url=f"https://t.me/avtowallet_bot?start=answer:{question_id}")
+                InlineKeyboardButton(text=f"✍️ Javob yozish", url=f"https://t.me/avtowallet_bot?start=answer__{question_id}")
             ]
         ]
     )
