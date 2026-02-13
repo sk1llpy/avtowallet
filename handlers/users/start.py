@@ -63,7 +63,7 @@ async def answer_message_handler(message: types.Message, state: FSMContext):
     answer = message.text
     
     data = await state.get_data()
-    question_id = menu.QUESTIONS[data.get("question_id")]
+    question_id = data.get("question_id")
     
     try:
         await bot.send_message(chat_id=question_id, text=f"""<b>Sizga admin tomonidan javob yuborildi ✅</b>
