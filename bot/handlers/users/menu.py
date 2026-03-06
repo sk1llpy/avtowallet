@@ -730,7 +730,7 @@ async def booking_back_to_vehicle(call: CallbackQuery, state: FSMContext, sessio
 async def booking_choose_date(call: CallbackQuery, state: FSMContext, session: Session):
     chosen_date = datetime.date.fromisoformat(call.data.split(":")[-1])
 
-    all_times = [f"{h:02d}:00" for h in range(10, 19)]
+    all_times = [f"{h:02d}:{m:02d}" for h in range(10, 19) for m in (0, 30)]
     with session:
         booked = list_booked_times(chosen_date, session)
     available = [t for t in all_times if t not in booked]
